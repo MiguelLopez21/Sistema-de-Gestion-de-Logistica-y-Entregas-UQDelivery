@@ -16,4 +16,7 @@ public final class ReglasValidacion {
     /** Misma política que HU-01: mínimo 8 caracteres, con una mayúscula y un número. */
     public static final String PASSWORD = "^(?=.*[A-Z])(?=.*\\d).+$";
     public static final String PASSWORD_MSG = "La contraseña debe tener al menos una mayúscula y un número";
+
+    public static final String MOTIVO = "^[\\p{L}\\p{N} .,;:'()¿?¡!%/-]*$";
+    public static final String MOTIVO_MSG = "El motivo solo puede contener letras, números, espacios y signos de puntuación comunes";
 }
