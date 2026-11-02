@@ -26,6 +26,11 @@ public class GlobalExceptionHandler {
         return construir(HttpStatus.CONFLICT, ex.getMessage());
     }
 
+    @ExceptionHandler(ParametroInvalidoException.class)
+    public ResponseEntity<ErrorRespuesta> parametroInvalido(ParametroInvalidoException ex) {
+        return construir(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     /** Respaldo ante condiciones de carrera sobre la restricción UNIQUE del correo. */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorRespuesta> integridad(DataIntegrityViolationException ex) {
