@@ -1,4 +1,4 @@
-import { CarOutlined, DashboardOutlined, HomeOutlined, InboxOutlined } from '@ant-design/icons';
+import { CarOutlined, DashboardOutlined, HomeOutlined, InboxOutlined, SendOutlined } from '@ant-design/icons';
 
 const INICIO = { ruta: '/inicio', etiqueta: 'Inicio', icono: <HomeOutlined /> };
 
@@ -9,7 +9,7 @@ export const MENU_POR_ROL = {
     { ruta: '/dashboard', etiqueta: 'Dashboard de métricas', icono: <DashboardOutlined /> },
   ],
   REPARTIDOR: [INICIO, { ruta: '/mis-entregas', etiqueta: 'Mis entregas', icono: <CarOutlined /> }],
-  CLIENTE_EMISOR: [INICIO],
+  CLIENTE_EMISOR: [INICIO, { ruta: '/solicitar-envio', etiqueta: 'Solicitar envío', icono: <SendOutlined /> }],
 };
 
 export const RUTA_INICIAL = {

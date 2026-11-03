@@ -31,6 +31,16 @@ public class GlobalExceptionHandler {
         return construir(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    @ExceptionHandler(PagoRechazadoException.class)
+    public ResponseEntity<ErrorRespuesta> pagoRechazado(PagoRechazadoException ex) {
+        return construir(HttpStatus.PAYMENT_REQUIRED, ex.getMessage());
+    }
+
+    @ExceptionHandler(SolicitudInvalidaException.class)
+    public ResponseEntity<ErrorRespuesta> solicitudInvalida(SolicitudInvalidaException ex) {
+        return construir(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     /** Respaldo ante condiciones de carrera sobre la restricción UNIQUE del correo. */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorRespuesta> integridad(DataIntegrityViolationException ex) {

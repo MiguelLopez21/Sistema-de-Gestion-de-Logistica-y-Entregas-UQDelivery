@@ -7,6 +7,7 @@ import EnviosPage from './pages/EnviosPage.jsx';
 import InicioPage from './pages/InicioPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import MisEntregasPage from './pages/MisEntregasPage.jsx';
+import SolicitarEnvioPage from './pages/SolicitarEnvioPage.jsx';
 
 export default function App() {
   return (
@@ -18,6 +19,9 @@ export default function App() {
           <Route element={<RutaProtegida roles={['ADMINISTRADOR']} />}>
             <Route path="/envios" element={<EnviosPage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
+          </Route>
+          <Route element={<RutaProtegida roles={['CLIENTE_EMISOR']} />}>
+            <Route path="/solicitar-envio" element={<SolicitarEnvioPage />} />
           </Route>
           <Route element={<RutaProtegida roles={['REPARTIDOR']} />}>
             <Route path="/mis-entregas" element={<MisEntregasPage />} />

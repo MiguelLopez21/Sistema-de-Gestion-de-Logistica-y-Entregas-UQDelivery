@@ -41,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/h2-console/**").permitAll()   // SOLO desarrollo: quitar en producción
                         .requestMatchers("/api/admin/**").hasRole("ADMINISTRADOR")
                         .requestMatchers("/api/repartidor/**").hasRole("REPARTIDOR")
+                        .requestMatchers("/api/cliente/**").hasRole("CLIENTE_EMISOR")
                         .requestMatchers("/api/perfil/**").authenticated()
                         .anyRequest().authenticated())
                 .httpBasic(b -> b.authenticationEntryPoint(entryPoint401()))

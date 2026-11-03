@@ -19,4 +19,22 @@ public final class ReglasValidacion {
 
     public static final String MOTIVO = "^[\\p{L}\\p{N} .,;:'()¿?¡!%/-]*$";
     public static final String MOTIVO_MSG = "El motivo solo puede contener letras, números, espacios y signos de puntuación comunes";
+
+    /** Direcciones: sin < > " ' ; & (XSS / inyección); permite # . , - / º °. */
+    public static final String DIRECCION = "^[\\p{L}\\p{N} .,#/º°-]+$";
+    public static final String DIRECCION_MSG = "La dirección solo puede contener letras, números, espacios y . , # / - º °";
+
+    /** Descripción libre del paquete: sin < > " ' ; & ni caracteres de control. */
+    public static final String DESCRIPCION = "^[\\p{L}\\p{N} .,:()¿?¡!%/-]+$";
+    public static final String DESCRIPCION_MSG = "La descripción solo puede contener letras, números, espacios y signos de puntuación comunes (sin HTML ni scripts)";
+
+    /**
+     * Nombre de persona (destinatario, titular): palabras de letras, opcionalmente con punto final,
+     * separadas por un único espacio, apóstrofo o guion entre letras. Rechaza "x'--", "a--b", etc.
+     */
+    public static final String NOMBRE_PERSONA = "^\\p{L}+\\.?(?:(?: |['-])\\p{L}+\\.?)*$";
+    public static final String NOMBRE_PERSONA_MSG = "El nombre solo puede contener letras separadas por espacio, apóstrofo o guion";
+
+    /** Clave de idempotencia: 8 a 64 caracteres alfanuméricos o guion. */
+    public static final String CLAVE_IDEMPOTENCIA = "^[A-Za-z0-9-]{8,64}$";
 }

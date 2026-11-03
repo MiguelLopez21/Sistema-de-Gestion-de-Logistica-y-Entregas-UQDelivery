@@ -21,3 +21,9 @@ export function listarHistorial(envioId) {
 export function listarMisEntregas() {
   return cliente.get('/api/repartidor/entregas').then((respuesta) => respuesta.data);
 }
+
+export function solicitarEnvio(datos, claveIdempotencia) {
+  return cliente
+    .post('/api/cliente/envios', datos, { headers: { 'Idempotency-Key': claveIdempotencia } })
+    .then((respuesta) => respuesta.data);
+}
