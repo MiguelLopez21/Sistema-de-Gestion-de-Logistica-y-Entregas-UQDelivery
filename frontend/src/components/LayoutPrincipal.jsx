@@ -3,6 +3,7 @@ import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/useAuth.js';
 import { MENU_POR_ROL } from '../auth/menus.jsx';
+import NotificationPopover from './NotificationPopover.jsx';
 
 const { Header, Sider, Content } = Layout;
 
@@ -33,6 +34,7 @@ export default function LayoutPrincipal() {
       <Layout>
         <Header style={{ borderBottom: '1px solid #e3e8ee', padding: '0 24px' }}>
           <Flex justify="flex-end" align="center" gap={16} style={{ height: '100%' }}>
+            <NotificationPopover />
             <Flex align="center" gap={10}>
               <Avatar size="small" icon={<UserOutlined />} />
               <Typography.Text strong>{perfil.usuario.nombre}</Typography.Text>

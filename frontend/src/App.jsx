@@ -8,6 +8,8 @@ import InicioPage from './pages/InicioPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import MisEntregasPage from './pages/MisEntregasPage.jsx';
 import SolicitarEnvioPage from './pages/SolicitarEnvioPage.jsx';
+import ShipmentHistoryPage from './pages/ShipmentHistoryPage.jsx';
+import ShipmentTrackingPage from './pages/ShipmentTrackingPage.jsx';
 
 export default function App() {
   return (
@@ -16,6 +18,10 @@ export default function App() {
       <Route element={<RutaProtegida />}>
         <Route element={<LayoutPrincipal />}>
           <Route path="/inicio" element={<InicioPage />} />
+          <Route element={<RutaProtegida roles={['ADMINISTRADOR', 'CLIENTE_EMISOR', 'REPARTIDOR']} />}>
+            <Route path="/historial-envios" element={<ShipmentHistoryPage />} />
+            <Route path="/historial-envios/:trackingNumber" element={<ShipmentTrackingPage />} />
+          </Route>
           <Route element={<RutaProtegida roles={['ADMINISTRADOR']} />}>
             <Route path="/envios" element={<EnviosPage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
