@@ -82,9 +82,11 @@ class PersistenceRepositoryTest {
                 LocalDateTime.of(2026, 10, 1, 8, 0), false);
         Notification reciente = notificacion(usuario, "Aviso reciente",
                 LocalDateTime.of(2026, 10, 2, 8, 0), false);
-        notificacion(usuario, "Aviso leído", LocalDateTime.of(2026, 10, 3, 8, 0), true);
+        Notification leida = notificacion(usuario, "Aviso leído",
+                LocalDateTime.of(2026, 10, 3, 8, 0), true);
         entityManager.persist(antigua);
         entityManager.persist(reciente);
+        entityManager.persist(leida);
         entityManager.flush();
 
         List<Notification> resultado = notificationRepository.findByUserIdOrderByCreatedAtDesc(usuario.getId());
