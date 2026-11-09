@@ -3,6 +3,7 @@ export const ESTADOS = {
   ASIGNADO: { etiqueta: 'Asignado', color: 'blue', grafico: '#2f7fc1' },
   EN_RUTA: { etiqueta: 'En ruta', color: 'cyan', grafico: '#1aa6a6' },
   ENTREGADO: { etiqueta: 'Entregado', color: 'green', grafico: '#3c9d5d' },
+  CANCELADO: { etiqueta: 'Cancelado', color: 'red', grafico: '#d9363e' },
 };
 
 export const LISTA_ESTADOS = Object.keys(ESTADOS);

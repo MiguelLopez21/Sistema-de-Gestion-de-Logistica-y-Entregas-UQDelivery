@@ -36,16 +36,19 @@ public class EnvioService {
     private final UsuarioRepository usuarioRepository;
     private final CotizacionService cotizacionService;
     private final PagoSimuladoService pagoService;
+    private final NotificationService notificationService;
     private final SecureRandom random = new SecureRandom();
 
     public EnvioService(EnvioRepository envioRepository,
                         UsuarioRepository usuarioRepository,
                         CotizacionService cotizacionService,
-                        PagoSimuladoService pagoService) {
+                        PagoSimuladoService pagoService,
+                        NotificationService notificationService) {
         this.envioRepository = envioRepository;
         this.usuarioRepository = usuarioRepository;
         this.cotizacionService = cotizacionService;
         this.pagoService = pagoService;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -108,6 +111,7 @@ public class EnvioService {
         String referenciaPago = pagoService.cobrar(r.pago().numeroTarjeta(), cotizacion.total());
         anularPagoSiHayRollback(referenciaPago);
         envio.setReferenciaPago(referenciaPago);
+        notificationService.notifyStatusChange(envio, null, EstadoEnvio.PENDIENTE);
         return new ResultadoSolicitud(SolicitudEnvioResponse.desde(envio), true);
     }
 

@@ -43,11 +43,14 @@ class EnvioServiceTest {
     private UsuarioRepository usuarioRepository;
     @Mock
     private PagoSimuladoService pagoMock;
+    @Mock
+    private NotificationService notificationService;
 
     private final CotizacionService cotizacion = new CotizacionService();
 
     private EnvioService service() {
-        return new EnvioService(envioRepository, usuarioRepository, cotizacion, new PagoSimuladoService());
+        return new EnvioService(envioRepository, usuarioRepository, cotizacion,
+                new PagoSimuladoService(), notificationService);
     }
 
     @AfterEach
@@ -127,7 +130,8 @@ class EnvioServiceTest {
         previo.setValorCotizado(new BigDecimal("8092"));
         when(envioRepository.findByClienteIdAndClaveIdempotencia(cliente.getId(), "clave-12345"))
                 .thenReturn(Optional.of(previo));
-        EnvioService conMock = new EnvioService(envioRepository, usuarioRepository, cotizacion, pagoMock);
+        EnvioService conMock = new EnvioService(envioRepository, usuarioRepository, cotizacion,
+                pagoMock, notificationService);
 
         ResultadoSolicitud r = conMock.solicitar(solicitud(OK, 2), "cliente@uq.com", "clave-12345");
 
@@ -161,7 +165,8 @@ class EnvioServiceTest {
     void colisionAlPersistirFallaAntesDeCobrar() {
         clienteExistente();
         when(envioRepository.saveAndFlush(any())).thenThrow(new DataIntegrityViolationException("uk"));
-        EnvioService conMock = new EnvioService(envioRepository, usuarioRepository, cotizacion, pagoMock);
+        EnvioService conMock = new EnvioService(envioRepository, usuarioRepository, cotizacion,
+                pagoMock, notificationService);
 
         assertThrows(ConflictoException.class, () -> conMock.solicitar(solicitud(OK, 2), "cliente@uq.com", null));
 
@@ -172,7 +177,8 @@ class EnvioServiceTest {
     void siLaTransaccionHaceRollbackDespuesDeCobrarSeAnulaElPago() {
         clienteExistente();
         when(pagoMock.cobrar(any(), any())).thenReturn("PAG-REF123");
-        EnvioService conMock = new EnvioService(envioRepository, usuarioRepository, cotizacion, pagoMock);
+        EnvioService conMock = new EnvioService(envioRepository, usuarioRepository, cotizacion,
+                pagoMock, notificationService);
         TransactionSynchronizationManager.initSynchronization();
 
         conMock.solicitar(solicitud(OK, 2), "cliente@uq.com", null);
@@ -186,7 +192,8 @@ class EnvioServiceTest {
     void siLaTransaccionSeConfirmaNoSeAnulaElPago() {
         clienteExistente();
         when(pagoMock.cobrar(any(), any())).thenReturn("PAG-REF123");
-        EnvioService conMock = new EnvioService(envioRepository, usuarioRepository, cotizacion, pagoMock);
+        EnvioService conMock = new EnvioService(envioRepository, usuarioRepository, cotizacion,
+                pagoMock, notificationService);
         TransactionSynchronizationManager.initSynchronization();
 
         conMock.solicitar(solicitud(OK, 2), "cliente@uq.com", null);

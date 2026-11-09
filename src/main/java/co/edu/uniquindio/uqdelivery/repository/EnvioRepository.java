@@ -4,6 +4,7 @@ import co.edu.uniquindio.uqdelivery.dto.ConteoEstadoFila;
 import co.edu.uniquindio.uqdelivery.dto.EntregaFila;
 import co.edu.uniquindio.uqdelivery.model.Envio;
 import co.edu.uniquindio.uqdelivery.model.EstadoEnvio;
+import co.edu.uniquindio.uqdelivery.model.Rol;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,12 +26,13 @@ public interface EnvioRepository extends JpaRepository<Envio, Long>, JpaSpecific
     Optional<Envio> findByClienteIdAndClaveIdempotencia(Long clienteId, String claveIdempotencia);
 
     default Page<Envio> buscarHistorial(Long userId,
+                                        Rol rol,
                                         EstadoEnvio status,
                                         LocalDateTime startDate,
                                         LocalDateTime endDate,
-                                        String trackingNumber,
+                                        String query,
                                         Pageable pageable) {
-        return findAll(EnvioSpecifications.historial(userId, status, startDate, endDate, trackingNumber), pageable);
+        return findAll(EnvioSpecifications.historial(userId, rol, status, startDate, endDate, query), pageable);
     }
 
     @Query("""

@@ -4,23 +4,19 @@ import co.edu.uniquindio.uqdelivery.model.EstadoEnvio;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public record ShipmentHistoryFilterDto(
-        @Positive(message = "El id de usuario debe ser mayor a cero")
-        Long userId,
+        @Size(max = 100, message = "La búsqueda no puede superar 100 caracteres")
+        String query,
 
         EstadoEnvio status,
 
-        LocalDateTime startDate,
+        LocalDate startDate,
 
-        LocalDateTime endDate,
-
-        @Size(max = 20, message = "El código de seguimiento no puede superar 20 caracteres")
-        String trackingNumber,
+        LocalDate endDate,
 
         @Min(value = 0, message = "La página no puede ser negativa")
         int page,

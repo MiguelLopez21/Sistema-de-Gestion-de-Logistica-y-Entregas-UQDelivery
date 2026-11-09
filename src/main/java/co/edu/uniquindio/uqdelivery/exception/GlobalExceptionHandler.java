@@ -5,6 +5,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -39,6 +40,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SolicitudInvalidaException.class)
     public ResponseEntity<ErrorRespuesta> solicitudInvalida(SolicitudInvalidaException ex) {
         return construir(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorRespuesta> accesoDenegado(AccessDeniedException ex) {
+        return construir(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
     /** Respaldo ante condiciones de carrera sobre la restricción UNIQUE del correo. */

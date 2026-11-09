@@ -39,6 +39,8 @@ class AsignacionServiceTest {
     private AsignacionEnvioRepository asignacionRepository;
     @Mock
     private UsuarioRepository usuarioRepository;
+    @Mock
+    private NotificationService notificationService;
     @InjectMocks
     private AsignacionService service;
 

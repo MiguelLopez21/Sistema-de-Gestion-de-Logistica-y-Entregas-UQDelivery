@@ -2,12 +2,14 @@ package co.edu.uniquindio.uqdelivery.repository;
 
 import co.edu.uniquindio.uqdelivery.model.Envio;
 import co.edu.uniquindio.uqdelivery.model.EstadoEnvio;
+import co.edu.uniquindio.uqdelivery.model.Rol;
 import co.edu.uniquindio.uqdelivery.model.Usuario;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
+import java.util.Locale;
 
 public final class EnvioSpecifications {
 
@@ -16,19 +18,18 @@ public final class EnvioSpecifications {
 
     public static Specification<Envio> historial(
             Long userId,
+            Rol rol,
             EstadoEnvio status,
             LocalDateTime startDate,
             LocalDateTime endDate,
-            String trackingNumber) {
+            String queryText) {
         Specification<Envio> specification = (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
 
         if (userId != null) {
             specification = specification.and((root, query, criteriaBuilder) -> {
-                Join<Envio, Usuario> client = root.join("cliente", JoinType.LEFT);
-                Join<Envio, Usuario> courier = root.join("repartidor", JoinType.LEFT);
-                return criteriaBuilder.or(
-                        criteriaBuilder.equal(client.get("id"), userId),
-                        criteriaBuilder.equal(courier.get("id"), userId));
+                String relation = rol == Rol.CLIENTE_EMISOR ? "cliente" : "repartidor";
+                Join<Envio, Usuario> user = root.join(relation, JoinType.INNER);
+                return criteriaBuilder.equal(user.get("id"), userId);
             });
         }
 
@@ -44,13 +45,15 @@ public final class EnvioSpecifications {
 
         if (endDate != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.lessThanOrEqualTo(root.get("fechaCreacion"), endDate));
+                    criteriaBuilder.lessThan(root.get("fechaCreacion"), endDate));
         }
 
-        if (trackingNumber != null && !trackingNumber.isBlank()) {
-            String normalizedTrackingNumber = trackingNumber.trim();
+        if (queryText != null && !queryText.isBlank()) {
+            String normalizedQuery = "%" + queryText.trim().toLowerCase(Locale.ROOT) + "%";
             specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("codigoSeguimiento"), normalizedTrackingNumber));
+                    criteriaBuilder.like(
+                            criteriaBuilder.lower(root.get("codigoSeguimiento")),
+                            normalizedQuery));
         }
 
         return specification;

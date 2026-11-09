@@ -29,13 +29,16 @@ public class AsignacionService {
     private final EnvioRepository envioRepository;
     private final AsignacionEnvioRepository asignacionRepository;
     private final UsuarioRepository usuarioRepository;
+    private final NotificationService notificationService;
 
     public AsignacionService(EnvioRepository envioRepository,
                              AsignacionEnvioRepository asignacionRepository,
-                             UsuarioRepository usuarioRepository) {
+                             UsuarioRepository usuarioRepository,
+                             NotificationService notificationService) {
         this.envioRepository = envioRepository;
         this.asignacionRepository = asignacionRepository;
         this.usuarioRepository = usuarioRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -47,9 +50,11 @@ public class AsignacionService {
         Usuario repartidor = buscarRepartidorAsignable(request.repartidorId());
         Usuario administrador = buscarAdministrador(correoAdministrador);
 
+        EstadoEnvio estadoAnterior = envio.getEstado();
         envio.setRepartidor(repartidor);
         envio.setEstado(EstadoEnvio.ASIGNADO);
         registrar(envio, null, repartidor, administrador, request.motivo());
+        notificationService.notifyStatusChange(envio, estadoAnterior, EstadoEnvio.ASIGNADO);
         return EnvioResponse.desde(envio);
     }
 
@@ -64,9 +69,11 @@ public class AsignacionService {
         }
         Usuario administrador = buscarAdministrador(correoAdministrador);
 
+        EstadoEnvio estadoAnterior = envio.getEstado();
         envio.setRepartidor(repartidor);
         envio.setEstado(EstadoEnvio.ASIGNADO);
         registrar(envio, anterior, repartidor, administrador, request.motivo());
+        notificationService.notifyStatusChange(envio, estadoAnterior, EstadoEnvio.ASIGNADO);
         return EnvioResponse.desde(envio);
     }
 
@@ -95,6 +102,7 @@ public class AsignacionService {
     private void validarReasignable(Envio envio) {
         switch (envio.getEstado()) {
             case ENTREGADO -> throw new ConflictoException("No se puede reasignar un envío ya entregado");
+            case CANCELADO -> throw new ConflictoException("No se puede reasignar un envío cancelado");
             case PENDIENTE -> throw new ConflictoException("El envío aún no tiene repartidor asignado");
             default -> { }
         }

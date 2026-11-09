@@ -48,9 +48,10 @@ class PersistenceRepositoryTest {
 
         Page<Envio> resultado = envioRepository.buscarHistorial(
                 cliente.getId(),
+                Rol.CLIENTE_EMISOR,
                 EstadoEnvio.ENTREGADO,
                 LocalDateTime.of(2026, 10, 10, 0, 0),
-                LocalDateTime.of(2026, 10, 10, 23, 59, 59),
+                LocalDateTime.of(2026, 10, 11, 0, 0),
                 "UQD-001",
                 PageRequest.of(0, 1, Sort.by("id")));
 
@@ -68,7 +69,7 @@ class PersistenceRepositoryTest {
         entityManager.flush();
 
         Page<Envio> resultado = envioRepository.buscarHistorial(
-                repartidor.getId(), null, null, null, null, PageRequest.of(0, 10));
+                repartidor.getId(), Rol.REPARTIDOR, null, null, null, null, PageRequest.of(0, 10));
 
         assertEquals(List.of("UQD-004"),
                 resultado.getContent().stream().map(Envio::getCodigoSeguimiento).toList());
