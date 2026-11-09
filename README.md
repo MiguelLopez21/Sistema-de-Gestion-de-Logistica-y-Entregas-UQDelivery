@@ -4,7 +4,7 @@ El objetivo de este proyecto es diseñar, documentar, desarrollar y probar una a
 
 ## Requisitos
 
-- Java 17 o superior
+- Java 25 (LTS) o superior
 - Maven (incluido mediante `mvnw`, no hace falta instalarlo)
 
 ## Ejecutar el proyecto

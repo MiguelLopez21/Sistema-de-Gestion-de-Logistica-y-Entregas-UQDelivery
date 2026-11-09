@@ -7,6 +7,7 @@ import co.edu.uniquindio.uqdelivery.model.EstadoEnvio;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -15,13 +16,22 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public interface EnvioRepository extends JpaRepository<Envio, Long> {
+public interface EnvioRepository extends JpaRepository<Envio, Long>, JpaSpecificationExecutor<Envio> {
 
     boolean existsByCodigoSeguimiento(String codigoSeguimiento);
 
     long countByClienteCorreoIgnoreCase(String correo);
 
     Optional<Envio> findByClienteIdAndClaveIdempotencia(Long clienteId, String claveIdempotencia);
+
+    default Page<Envio> buscarHistorial(Long userId,
+                                        EstadoEnvio status,
+                                        LocalDateTime startDate,
+                                        LocalDateTime endDate,
+                                        String trackingNumber,
+                                        Pageable pageable) {
+        return findAll(EnvioSpecifications.historial(userId, status, startDate, endDate, trackingNumber), pageable);
+    }
 
     @Query("""
             select e from Envio e
