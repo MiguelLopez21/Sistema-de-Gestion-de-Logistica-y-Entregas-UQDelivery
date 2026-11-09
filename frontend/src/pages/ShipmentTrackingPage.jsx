@@ -4,14 +4,20 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getShipmentHistory } from '../api/shipmentApi.js';
 import { mensajeError } from '../api/cliente.js';
+import { useAuth } from '../auth/useAuth.js';
 import CancellationAlert from '../components/CancellationAlert.jsx';
+import ComprobanteEntrega from '../components/entregas/ComprobanteEntrega.jsx';
 import EncabezadoPagina from '../components/EncabezadoPagina.jsx';
 import EstadoTag from '../components/EstadoTag.jsx';
 import { formatoFecha, formatoMoneda } from '../utils/formato.js';
 
+const ROLES_CON_COMPROBANTE = ['ADMINISTRADOR', 'CLIENTE_EMISOR'];
+
 export default function ShipmentTrackingPage() {
   const { trackingNumber } = useParams();
   const navigate = useNavigate();
+  const { perfil } = useAuth();
+  const rol = perfil.usuario.rol;
   const [shipment, setShipment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -78,6 +84,9 @@ export default function ShipmentTrackingPage() {
             </Descriptions>
             {shipment.status === 'EN_RUTA' && <Tag color="cyan">Tu envío está en camino</Tag>}
           </Card>
+          {shipment.status === 'ENTREGADO' && ROLES_CON_COMPROBANTE.includes(rol) && (
+            <ComprobanteEntrega envioId={shipment.id} rol={rol} />
+          )}
         </>
       )}
     </>

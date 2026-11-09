@@ -27,3 +27,32 @@ export function solicitarEnvio(datos, claveIdempotencia) {
     .post('/api/cliente/envios', datos, { headers: { 'Idempotency-Key': claveIdempotencia } })
     .then((respuesta) => respuesta.data);
 }
+
+export function obtenerDetalleEntrega(envioId) {
+  return cliente.get(`/api/repartidor/entregas/${envioId}`).then((respuesta) => respuesta.data);
+}
+
+export async function listarMisEntregasDetalladas() {
+  const entregas = await listarMisEntregas();
+  return Promise.all(entregas.map((entrega) => obtenerDetalleEntrega(entrega.id)));
+}
+
+export function cerrarEntrega(envioId, datos) {
+  return cliente
+    .post(`/api/repartidor/entregas/${envioId}/cierre`, datos)
+    .then((respuesta) => respuesta.data);
+}
+
+function baseConsulta(rol) {
+  return rol === 'ADMINISTRADOR' ? '/api/admin/envios' : '/api/cliente/envios';
+}
+
+export function obtenerDetalleEnvio({ envioId, rol }) {
+  return cliente.get(`${baseConsulta(rol)}/${envioId}`).then((respuesta) => respuesta.data);
+}
+
+export function obtenerEvidencia({ envioId, rol, tipo }) {
+  return cliente
+    .get(`${baseConsulta(rol)}/${envioId}/evidencia/${tipo}`, { responseType: 'blob' })
+    .then((respuesta) => respuesta.data);
+}

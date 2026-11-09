@@ -6,6 +6,7 @@ import co.edu.uniquindio.uqdelivery.dto.DetalleEnvioResponse;
 import co.edu.uniquindio.uqdelivery.dto.EnvioResponse;
 import co.edu.uniquindio.uqdelivery.service.AsignacionService;
 import co.edu.uniquindio.uqdelivery.service.CierreEntregaService;
+import co.edu.uniquindio.uqdelivery.service.ConsultaEnvioService;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,15 +27,24 @@ public class EntregaController {
 
     private final AsignacionService asignacionService;
     private final CierreEntregaService cierreEntregaService;
+    private final ConsultaEnvioService consultaEnvioService;
 
-    public EntregaController(AsignacionService asignacionService, CierreEntregaService cierreEntregaService) {
+    public EntregaController(AsignacionService asignacionService,
+                             CierreEntregaService cierreEntregaService,
+                             ConsultaEnvioService consultaEnvioService) {
         this.asignacionService = asignacionService;
         this.cierreEntregaService = cierreEntregaService;
+        this.consultaEnvioService = consultaEnvioService;
     }
 
     @GetMapping
     public List<EnvioResponse> misEntregas(Authentication authentication) {
         return asignacionService.entregasDelRepartidor(authentication.getName());
+    }
+
+    @GetMapping("/{id}")
+    public DetalleEnvioResponse detalle(@PathVariable Long id, Authentication authentication) {
+        return consultaEnvioService.detalleDelRepartidor(id, authentication.getName());
     }
 
     @PostMapping(path = "/{id}/cierre", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

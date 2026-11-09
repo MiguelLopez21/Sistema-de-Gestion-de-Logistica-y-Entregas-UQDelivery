@@ -41,6 +41,17 @@ public class ConsultaEnvioService {
     }
 
     @Transactional(readOnly = true)
+    public DetalleEnvioResponse detalleDelRepartidor(Long envioId, String correo) {
+        Usuario repartidor = buscarUsuario(correo);
+        Envio envio = buscarEnvio(envioId);
+        if (envio.getRepartidor() == null || !envio.getRepartidor().getId().equals(repartidor.getId())) {
+            throw new AccessDeniedException("El envío no está asignado a este repartidor");
+        }
+        TiposEvidencia tipos = evidenciaRepository.tiposDelEnvio(envioId).orElse(TiposEvidencia.VACIA);
+        return DetalleEnvioResponse.desde(envio, tipos);
+    }
+
+    @Transactional(readOnly = true)
     public ArchivoEvidencia evidencia(Long envioId, String tipo, String correo) {
         boolean foto = esFoto(tipo);
         buscarAutorizado(envioId, correo);
@@ -64,15 +75,23 @@ public class ConsultaEnvioService {
     }
 
     private Envio buscarAutorizado(Long envioId, String correo) {
-        Usuario usuario = usuarioRepository.findByCorreoIgnoreCase(correo.trim().toLowerCase(Locale.ROOT))
-                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario autenticado no encontrado"));
-        Envio envio = envioRepository.findById(envioId)
-                .orElseThrow(() -> new RecursoNoEncontradoException("Envío con id " + envioId + " no encontrado"));
+        Usuario usuario = buscarUsuario(correo);
+        Envio envio = buscarEnvio(envioId);
         boolean administrador = usuario.getRol() == Rol.ADMINISTRADOR;
         boolean propietario = envio.getCliente() != null && envio.getCliente().getId().equals(usuario.getId());
         if (!administrador && !propietario) {
             throw new AccessDeniedException("No tiene permiso para consultar este envío");
         }
         return envio;
+    }
+
+    private Usuario buscarUsuario(String correo) {
+        return usuarioRepository.findByCorreoIgnoreCase(correo.trim().toLowerCase(Locale.ROOT))
+                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario autenticado no encontrado"));
+    }
+
+    private Envio buscarEnvio(Long envioId) {
+        return envioRepository.findById(envioId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Envío con id " + envioId + " no encontrado"));
     }
 }

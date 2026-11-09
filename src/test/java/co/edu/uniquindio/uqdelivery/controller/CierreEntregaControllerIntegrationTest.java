@@ -261,4 +261,38 @@ class CierreEntregaControllerIntegrationTest {
         mockMvc.perform(get(CLIENTE + "/999999").with(httpBasic("cliente1@uqdelivery.com", CLAVE)))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void elRepartidorConsultaElDetalleDeSuEnvio() throws Exception {
+        Envio envio = crearEnvio(EstadoEnvio.EN_RUTA);
+
+        mockMvc.perform(get(ENTREGAS + "/" + envio.getId()).with(httpBasic(REP1, CLAVE)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(envio.getId()))
+                .andExpect(jsonPath("$.estado").value("EN_RUTA"))
+                .andExpect(jsonPath("$.codigoSeguimiento").value("UQD-TEST000001"))
+                .andExpect(jsonPath("$.tieneFoto").value(false));
+    }
+
+    @Test
+    void elRepartidorNoConsultaEnviosDeOtroRepartidor() throws Exception {
+        Envio envio = crearEnvio(EstadoEnvio.EN_RUTA);
+
+        mockMvc.perform(get(ENTREGAS + "/" + envio.getId()).with(httpBasic("rep2@uqdelivery.com", CLAVE)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void elClienteNoUsaElDetalleDelRepartidor() throws Exception {
+        Envio envio = crearEnvio(EstadoEnvio.EN_RUTA);
+
+        mockMvc.perform(get(ENTREGAS + "/" + envio.getId()).with(httpBasic("cliente1@uqdelivery.com", CLAVE)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void detalleDelRepartidorDevuelve404SiElEnvioNoExiste() throws Exception {
+        mockMvc.perform(get(ENTREGAS + "/999999").with(httpBasic(REP1, CLAVE)))
+                .andExpect(status().isNotFound());
+    }
 }
