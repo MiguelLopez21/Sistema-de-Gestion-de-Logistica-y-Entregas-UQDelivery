@@ -10,6 +10,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -51,6 +53,22 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorRespuesta> integridad(DataIntegrityViolationException ex) {
         return construir(HttpStatus.CONFLICT, "La operación viola una restricción de datos (¿correo duplicado?)");
+    }
+
+    @ExceptionHandler(DatosInvalidosException.class)
+    public ResponseEntity<ErrorRespuesta> datosInvalidos(DatosInvalidosException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorRespuesta.de(400, ex.getMessage(), ex.getErrores()));
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorRespuesta> archivoDemasiadoGrande(MaxUploadSizeExceededException ex) {
+        return construir(HttpStatus.CONTENT_TOO_LARGE, "Cada imagen debe pesar como máximo 2 MB");
+    }
+
+    @ExceptionHandler(MultipartException.class)
+    public ResponseEntity<ErrorRespuesta> multipartInvalido(MultipartException ex) {
+        return construir(HttpStatus.BAD_REQUEST, "La solicitud debe enviarse como multipart/form-data");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

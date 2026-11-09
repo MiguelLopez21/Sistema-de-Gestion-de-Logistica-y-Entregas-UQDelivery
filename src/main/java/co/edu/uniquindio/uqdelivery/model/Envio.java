@@ -84,6 +84,12 @@ public class Envio {
     @Column(precision = 12, scale = 2)
     private BigDecimal valorTotal;
 
+    @Column(length = 100)
+    private String nombreReceptor;
+
+    private Double latitudEntrega;
+    private Double longitudEntrega;
+
     @PrePersist
     void antesDePersistir() {
         if (this.fechaCreacion == null) {
@@ -139,4 +145,10 @@ public class Envio {
     public void setFechaEntrega(LocalDateTime fechaEntrega) { this.fechaEntrega = fechaEntrega; }
     public BigDecimal getValorTotal() { return valorTotal; }
     public void setValorTotal(BigDecimal valorTotal) { this.valorTotal = valorTotal; }
+    public String getNombreReceptor() { return nombreReceptor; }
+    public void setNombreReceptor(String nombreReceptor) { this.nombreReceptor = nombreReceptor; }
+    public Double getLatitudEntrega() { return latitudEntrega; }
+    public void setLatitudEntrega(Double latitudEntrega) { this.latitudEntrega = latitudEntrega; }
+    public Double getLongitudEntrega() { return longitudEntrega; }
+    public void setLongitudEntrega(Double longitudEntrega) { this.longitudEntrega = longitudEntrega; }
 }
