@@ -1,4 +1,4 @@
-import { CarOutlined, DashboardOutlined, HistoryOutlined, HomeOutlined, InboxOutlined, SendOutlined } from '@ant-design/icons';
+import { CarOutlined, DashboardOutlined, HistoryOutlined, HomeOutlined, InboxOutlined, SendOutlined, CalculatorOutlined } from '@ant-design/icons';
 
 const INICIO = { ruta: '/inicio', etiqueta: 'Inicio', icono: <HomeOutlined /> };
 
@@ -16,6 +16,7 @@ export const MENU_POR_ROL = {
   ],
   CLIENTE_EMISOR: [
     INICIO,
+    { ruta: '/cotizar-envio', etiqueta: 'Cotizar envío', icono: <CalculatorOutlined /> },
     { ruta: '/solicitar-envio', etiqueta: 'Solicitar envío', icono: <SendOutlined /> },
     { ruta: '/historial-envios', etiqueta: 'Historial de envíos', icono: <HistoryOutlined /> },
   ],

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Alert, App, Button, Card, Col, Descriptions, Form, Input, InputNumber, Result, Row, Select } from 'antd';
 import { CreditCardOutlined, PlusOutlined } from '@ant-design/icons';
 import { solicitarEnvio } from '../api/enviosApi.js';
@@ -6,6 +5,8 @@ import { mensajeError } from '../api/cliente.js';
 import EncabezadoPagina from '../components/EncabezadoPagina.jsx';
 import EstadoTag from '../components/EstadoTag.jsx';
 import { formatoMoneda } from '../utils/formato.js';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   LIMITES,
   MENSAJE_DESCRIPCION,
@@ -37,12 +38,20 @@ function tarjetaSinEspacios(valor) {
 export default function SolicitarEnvioPage() {
   const { message } = App.useApp();
   const [formulario] = Form.useForm();
+    const ubicacion = useLocation();
   const [enviando, setEnviando] = useState(false);
   const [errorPago, setErrorPago] = useState(null);
   const [creado, setCreado] = useState(null);
   // Una clave por intento de solicitud: un doble clic o un reintento no duplica envío ni cobro.
   const [clave, setClave] = useState(nuevaClaveIdempotencia);
 
+      // Si el cliente llega desde "Cotizar envío", se precargan zonas, medidas y servicio.
+      useEffect(() => {
+        const datos = ubicacion.state?.datosEnvio;
+        if (datos) {
+          formulario.setFieldsValue(datos);
+        }
+      }, [formulario, ubicacion.state]);
   async function enviar(valores) {
     const { numeroTarjeta, titular, ...resto } = valores;
     setEnviando(true);

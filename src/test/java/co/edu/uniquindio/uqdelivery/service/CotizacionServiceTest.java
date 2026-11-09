@@ -51,4 +51,19 @@ class CotizacionServiceTest {
     void rechazaSolicitudNula() {
         assertThrows(IllegalArgumentException.class, () -> service.cotizar(null));
     }
+
+
+    @Test
+    void elDesgloseSiempreSumaExactoAlSubtotalYAlTotal() {
+        for (TipoServicio tipo : TipoServicio.values()) {
+            for (double km = 1.0; km <= 25.0; km += 0.7) {
+                Cotizacion c = service.cotizar(new SolicitudCotizacion(km, 1.2, 63, 31, 11, tipo));
+                assertEquals(c.subtotal(),
+                        c.costoBase().add(c.costoDistancia()).add(c.costoPeso()).add(c.recargoServicio()));
+                assertEquals(c.total(), c.subtotal().add(c.iva()));
+            }
+        }
+    }
+
 }
+

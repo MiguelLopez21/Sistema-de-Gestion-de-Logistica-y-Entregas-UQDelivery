@@ -10,6 +10,7 @@ import MisEntregasPage from './pages/MisEntregasPage.jsx';
 import SolicitarEnvioPage from './pages/SolicitarEnvioPage.jsx';
 import ShipmentHistoryPage from './pages/ShipmentHistoryPage.jsx';
 import ShipmentTrackingPage from './pages/ShipmentTrackingPage.jsx';
+import CotizarEnvioPage from './pages/CotizarEnvioPage.jsx';
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
           </Route>
           <Route element={<RutaProtegida roles={['CLIENTE_EMISOR']} />}>
+             <Route path="/cotizar-envio" element={<CotizarEnvioPage />} />
             <Route path="/solicitar-envio" element={<SolicitarEnvioPage />} />
           </Route>
           <Route element={<RutaProtegida roles={['REPARTIDOR']} />}>

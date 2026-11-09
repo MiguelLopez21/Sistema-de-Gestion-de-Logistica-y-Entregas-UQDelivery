@@ -73,24 +73,18 @@ public class CotizacionService {
 
         double pesoFacturable = calcularPesoFacturable(solicitud);
 
-        BigDecimal costoDistancia = COSTO_POR_KM.multiply(BigDecimal.valueOf(solicitud.distanciaKm()));
-        BigDecimal costoPeso = COSTO_POR_KG.multiply(BigDecimal.valueOf(pesoFacturable));
-        BigDecimal subtotalEstandar = TARIFA_BASE.add(costoDistancia).add(costoPeso);
+        // Se redondea cada componente primero: así el desglose que ve el cliente siempre suma exacto.
+        BigDecimal costoBase = redondear(TARIFA_BASE);
+        BigDecimal costoDistancia = redondear(COSTO_POR_KM.multiply(BigDecimal.valueOf(solicitud.distanciaKm())));
+        BigDecimal costoPeso = redondear(COSTO_POR_KG.multiply(BigDecimal.valueOf(pesoFacturable)));
+        BigDecimal subtotalEstandar = costoBase.add(costoDistancia).add(costoPeso);
 
-        BigDecimal subtotal = subtotalEstandar.multiply(solicitud.tipoServicio().getFactor());
-        BigDecimal recargo = subtotal.subtract(subtotalEstandar);
-        BigDecimal iva = subtotal.multiply(IVA);
+        BigDecimal recargo = redondear(subtotalEstandar.multiply(solicitud.tipoServicio().getFactor().subtract(BigDecimal.ONE)));
+        BigDecimal subtotal = subtotalEstandar.add(recargo);
+        BigDecimal iva = redondear(subtotal.multiply(IVA));
         BigDecimal total = subtotal.add(iva);
 
-        return new Cotizacion(
-                pesoFacturable,
-                redondear(TARIFA_BASE),
-                redondear(costoDistancia),
-                redondear(costoPeso),
-                redondear(recargo),
-                redondear(subtotal),
-                redondear(iva),
-                redondear(total));
+        return new Cotizacion(pesoFacturable, costoBase, costoDistancia, costoPeso, recargo, subtotal, iva, total);
     }
 
     /** El peso facturable es el mayor entre el peso real y el del volumen. */
@@ -110,7 +104,7 @@ public class CotizacionService {
             throw new IllegalArgumentException("La distancia debe ser mayor a 0");
         }
         if (s.distanciaKm() > DISTANCIA_MAXIMA_KM) {
-            throw new IllegalArgumentException("La distancia excede el máximo de " + DISTANCIA_MAXIMA_KM + " km");
+            throw new IllegalArgumentException("La distancia excede el máximo de " + (int) DISTANCIA_MAXIMA_KM + " km");
         }
         if (s.pesoKg() <= 0) {
             throw new IllegalArgumentException("El peso debe ser mayor a 0");
@@ -119,7 +113,7 @@ public class CotizacionService {
             throw new IllegalArgumentException("Las dimensiones deben ser mayores a 0");
         }
         if (calcularPesoFacturable(s) > PESO_MAXIMO_KG) {
-            throw new IllegalArgumentException("El peso facturable excede el máximo de " + PESO_MAXIMO_KG + " kg");
+            throw new IllegalArgumentException("El peso facturable excede el máximo de " + (int) PESO_MAXIMO_KG + " kg (se cobra el mayor entre el peso real y el volumétrico)");
         }
     }
 
