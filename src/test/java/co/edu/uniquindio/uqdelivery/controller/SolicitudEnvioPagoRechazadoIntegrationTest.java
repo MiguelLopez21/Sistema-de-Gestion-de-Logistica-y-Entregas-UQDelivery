@@ -4,6 +4,7 @@ import co.edu.uniquindio.uqdelivery.model.Envio;
 import co.edu.uniquindio.uqdelivery.model.Rol;
 import co.edu.uniquindio.uqdelivery.model.Usuario;
 import co.edu.uniquindio.uqdelivery.repository.EnvioRepository;
+import co.edu.uniquindio.uqdelivery.repository.NotificationRepository;
 import co.edu.uniquindio.uqdelivery.repository.UsuarioRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,6 +49,8 @@ class SolicitudEnvioPagoRechazadoIntegrationTest {
     @Autowired
     private EnvioRepository envioRepository;
     @Autowired
+    private NotificationRepository notificationRepository;
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @BeforeEach
@@ -65,6 +68,7 @@ class SolicitudEnvioPagoRechazadoIntegrationTest {
     @AfterEach
     void limpiar() {
         usuarioRepository.findByCorreoIgnoreCase(CORREO).ifPresent(u -> {
+            notificationRepository.deleteAll();
             envioRepository.findAll().stream()
                     .filter(e -> e.getCliente() != null && e.getCliente().getId().equals(u.getId()))
                     .forEach(envioRepository::delete);
